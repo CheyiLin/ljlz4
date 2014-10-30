@@ -2,6 +2,7 @@ language: erlang
 
 env:
     global:
+        - DEPS_BUILD_DIR=$TRAVIS_BUILD_DIR/deps
         - LZ4_URL="https://github.com/Cyan4973/lz4/archive/r123.tar.gz"
         - LJ20_URL="http://luajit.org/download/LuaJIT-2.0.3.tar.gz"
         - LJ21_REPO="http://luajit.org/git/luajit-2.0.git"
@@ -13,23 +14,27 @@ install:
     - sudo apt-get update -q
     - sudo apt-get install luarocks
     - sudo luarocks install busted
+    - mkdir -p $DEPS_BUILD_DIR
     # install LZ4 r123
+    - cd $DEPS_BUILD_DIR
     - wget $LZ4_URL -O lz4-r123.tar.gz
-    - tar xzf lz4-r123.tar.gz
-    - cd $TRAVIS_BUILD_DIR/lz4-r123
+    - tar xzf lz4-r123.tar.gz && cd lz4-r123
     - sudo make install
     # install LuaJIT 2.0 stable
+    - cd $DEPS_BUILD_DIR
     - wget $LJ20_URL
-    - tar xzf LuaJIT-2.0.3.tar.gz
-    - cd $TRAVIS_BUILD_DIR/LuaJIT-2.0.3
+    - tar xzf LuaJIT-2.0.3.tar.gz && cd LuaJIT-2.0.3
     - sudo make XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
     # install LuaJIT 2.1 alpha
-    - git clone -b v2.1 $LJ21_REPO luajit-2.1.git
-    - cd $TRAVIS_BUILD_DIR/luajit-2.1.git
+    - cd $DEPS_BUILD_DIR
+    - git clone -b v2.1 $LJ21_REPO luajit-2.1.git && cd luajit-2.1.git
     - sudo make XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
+    # done, back to home directory
     - cd $TRAVIS_BUILD_DIR
 
 script:
+    - which $LUA_BIN
+    - sudo ldconfig -p | grep /usr/local/lib
     - sudo busted -v
 
 notifications:
