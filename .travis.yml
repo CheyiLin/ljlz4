@@ -1,0 +1,38 @@
+language: erlang
+
+env:
+    global:
+        - LZ4_URL="https://github.com/Cyan4973/lz4/archive/r123.tar.gz"
+        - LJ20_URL="http://luajit.org/download/LuaJIT-2.0.3.tar.gz"
+        - LJ21_REPO="http://luajit.org/git/luajit-2.0.git"
+    matrix:
+        - LUAJIT=LuaJIT-2.0  LUA_BIN=luajit-2.0.3
+        - LUAJIT=LuaJIT-2.1  LUA_BIN=luajit-2.1.0-alpha
+
+install:
+    - sudo apt-get update -q
+    - sudo apt-get install luarocks
+    - sudo luarocks install busted
+    # install LZ4 r123
+    - wget $LZ4_URL
+    - tar xzf lz4-r123.tar.gz
+    - cd $TRAVIS_BUILD_DIR/lz4-r123
+    - sudo make install
+    # install LuaJIT 2.0 stable
+    - wget $LJ20_URL
+    - tar xzf LuaJIT-2.0.3.tar.gz
+    - cd $TRAVIS_BUILD_DIR/LuaJIT-2.0.3
+    - sudo make XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
+    # install LuaJIT 2.1 alpha
+    - git clone -b v2.1 $LJ21_REPO luajit-2.1.git
+    - cd $TRAVIS_BUILD_DIR/luajit-2.1.git
+    - sudo make XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
+    - cd $TRAVIS_BUILD_DIR
+
+script:
+    - sudo busted -v
+
+notifications:
+    email:
+        on_success: change
+        on_failure: always
