@@ -29,12 +29,13 @@ install:
     - cd $DEPS_BUILD_DIR
     - git clone -b v2.1 $LJ21_REPO luajit-2.1.git && cd luajit-2.1.git
     - sudo make XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
+    # update shared libs
+    - sudo ldconfig && ls -lh /usr/local/lib
     # done, back to home directory
     - cd $TRAVIS_BUILD_DIR
 
 script:
     - which $LUA_BIN
-    - sudo ldconfig -p | grep /usr/local/lib
     - sudo busted -v
 
 notifications:
