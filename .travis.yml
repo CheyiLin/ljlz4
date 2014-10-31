@@ -6,19 +6,26 @@ env:
     global:
         - DEPS_BUILD_DIR=$TRAVIS_BUILD_DIR/deps
         - DEPS_PREFIX=/usr/local
+        - LUAROCKS_URL="http://luarocks.org/releases/luarocks-2.2.0.tar.gz"
         - LZ4_URL="https://github.com/Cyan4973/lz4/archive/r123.tar.gz"
         - LJ_REPO="http://luajit.org/git/luajit-2.0.git"
     matrix:
-        - LJ=LuaJIT-2.0 LJ_BR=master LJ_BIN=luajit-2.0.3
-        - LJ=LuaJIT-2.1 LJ_BR=v2.1   LJ_BIN=luajit-2.1.0-alpha
+        - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit-2.0.3       LUA_BIN="lua$LJ_BIN_SUFFIX"
+        - LJ=luajit-2.1 LJ_BR=v2.1   LJ_BIN_SUFFIX=jit-2.1.0-alpha LUA_BIN="lua$LJ_BIN_SUFFIX"
 
 before_install:
     - mkdir -p $DEPS_BUILD_DIR
     - sudo apt-get update -q
 
 install:
-    # install Lua busted
-    - sudo apt-get install luarocks
+    # install luarocks
+    - cd $DEPS_BUILD_DIR
+    - wget $LUAROCKS_URL -O luarocks-2.2.0.tar.gz
+    - tar xzf luarocks-2.2.0.tar.gz && cd luarocks-2.2.0
+    - ./configure
+      --lua-version=5.1 --lua-suffix=$LJ_BIN_SUFFIX --with-lua-include="/usr/local/include/$LJ"
+    - sudo make build install
+    # install busted
     - sudo luarocks install busted
     # install LZ4
     - cd $DEPS_BUILD_DIR
@@ -33,9 +40,11 @@ install:
 before_script:
     # back to home directory
     - cd $TRAVIS_BUILD_DIR
-    # update shared libraries, check executables
-    - sudo ldconfig && ls -lh /usr/local/lib
+    # update shared libraries
+    - sudo ldconfig -v | grep lz4
+    # check executables
     - which $LJ_BIN
+    - head -1 `which luarocks`
 
 script:
     - sudo busted -v
