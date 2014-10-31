@@ -33,6 +33,11 @@ local string_format = string.format
 local bit = require("bit")
 local ffi = require("ffi")
 
+local ffi_typeof = ffi.typeof
+local ffi_sizeof = ffi.sizeof
+local ffi_copy = ffi.copy
+local ffi_string = ffi.string
+
 local clz4 = ffi.load("lz4")
 
 ffi.cdef [[
@@ -48,12 +53,12 @@ ffi.cdef [[
 	} lz4_hdr_t;
 ]]
 
-local buf_ct = ffi.typeof("char[?]")
+local buf_ct = ffi_typeof("char[?]")
 
-local hdr_ct = ffi.typeof("lz4_hdr_t")
-local hdr_len = ffi.sizeof(hdr_ct)
+local hdr_ct = ffi_typeof("lz4_hdr_t")
+local hdr_len = ffi_sizeof(hdr_ct)
 
-local lz4_signature = 0x1b4c5a34	-- network-order: '\x1bLZ4'
+local lz4_signature = 0x1b4c5a34	-- '\x1bLZ4' (network-order)
 
 local function throw_error(fmt, ...)
 	error(string_format(fmt, ...))
@@ -76,14 +81,14 @@ end
 ntohl = htonl	-- reverse is the same
 
 local function lz4_hdr_write(buf, len)
-	if ffi.sizeof(buf) < hdr_len then
+	if ffi_sizeof(buf) < hdr_len then
 		return nil, "invalid buffer length"
 	end
 	
 	local hdr = hdr_ct()
 	hdr.sig = htonl(lz4_signature)
 	hdr.len = htonl(len)
-	ffi.copy(buf, hdr, hdr_len)
+	ffi_copy(buf, hdr, hdr_len)
 	
 	return true
 end
@@ -94,7 +99,7 @@ local function lz4_hdr_read(src)
 	end
 	
 	local hdr = hdr_ct()
-	ffi.copy(hdr, src, hdr_len)
+	ffi_copy(hdr, src, hdr_len)
 	hdr.sig = ntohl(hdr.sig)
 	hdr.len = ntohl(hdr.len)
 	
@@ -116,7 +121,7 @@ local function lz4_compress_core(src, clz4_compressor)
 	
 	local compress_len = clz4_compressor(src, dest_buf + hdr_len, #src)
 	if compress_len > 0 then
-		return ffi.string(dest_buf, compress_len + hdr_len)
+		return ffi_string(dest_buf, compress_len + hdr_len)
 	else
 		return nil, "compression failed"
 	end
@@ -126,7 +131,7 @@ local function lz4_decompress_core(src, dest_len)
 	local dest_buf = buf_ct(dest_len)
 	local decompress_len = clz4.LZ4_decompress_safe(src, dest_buf, #src, dest_len)
 	if decompress_len > 0 then
-		return ffi.string(dest_buf, decompress_len)
+		return ffi_string(dest_buf, decompress_len)
 	else
 		return nil, "decompression failed"
 	end
