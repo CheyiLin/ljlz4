@@ -169,7 +169,7 @@ end
 -- 
 -- @usage local lz4 = require("lz4")
 --        local data = "hello lz4"
---        local errmsg, compressed_data, decompressed_data,
+--        local errmsg, compressed_data, decompressed_data
 --        compressed_data, errmsg = lz4.compress(data)
 --        decompressed_data, errmsg = lz4.decompress(compressed_data)
 --        assert(decompressed_data == data) 
