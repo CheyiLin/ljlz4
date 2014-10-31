@@ -41,7 +41,7 @@ before_script:
     # back to home directory
     - cd $TRAVIS_BUILD_DIR
     # update shared libraries
-    - sudo ldconfig -v | grep lz4
+    - sudo ldconfig -v 2> /dev/null | grep lz4
     # check executables
     - which $LJ_BIN
     - head -1 `which luarocks`
