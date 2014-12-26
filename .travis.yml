@@ -7,7 +7,7 @@ env:
         - DEPS_BUILD_DIR=$TRAVIS_BUILD_DIR/deps
         - DEPS_PREFIX=/usr/local
         - LUAROCKS_URL="http://luarocks.org/releases/luarocks-2.2.0.tar.gz"
-        - LZ4_URL="https://github.com/Cyan4973/lz4/archive/r125.tar.gz"
+        - LZ4_URL="https://github.com/Cyan4973/lz4/archive/r126.tar.gz"
         - LJ_REPO="http://luajit.org/git/luajit-2.0.git"
     matrix:
         - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit-2.0.3       LJ_BIN="lua$LJ_BIN_SUFFIX"
@@ -20,8 +20,8 @@ before_install:
 install:
     # install LZ4
     - cd $DEPS_BUILD_DIR
-    - wget $LZ4_URL -O lz4-r125.tar.gz
-    - tar xzf lz4-r125.tar.gz && cd lz4-r125
+    - wget $LZ4_URL -O lz4-r126.tar.gz
+    - tar xzf lz4-r126.tar.gz && cd lz4-r126
     - sudo make PREFIX=$DEPS_PREFIX install
     # install LuaJIT
     - cd $DEPS_BUILD_DIR
