@@ -6,8 +6,10 @@ env:
     global:
         - DEPS_BUILD_DIR=$TRAVIS_BUILD_DIR/deps
         - DEPS_PREFIX=/usr/local
-        - LUAROCKS_URL="http://luarocks.org/releases/luarocks-2.2.0.tar.gz"
-        - LZ4_URL="https://github.com/Cyan4973/lz4/archive/r127.tar.gz"
+        - LZ4_VER=r128
+        - LUAROCKS_VER=2.2.1
+        - LZ4_URL="https://github.com/Cyan4973/lz4/archive/$LZ4_VER.tar.gz"
+        - LUAROCKS_URL="http://keplerproject.github.io/luarocks/releases/luarocks-$LUAROCKS_VER.tar.gz"
         - LJ_REPO="http://luajit.org/git/luajit-2.0.git"
     matrix:
         - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit-2.0.3       LJ_BIN="lua$LJ_BIN_SUFFIX"
@@ -20,8 +22,8 @@ before_install:
 install:
     # install LZ4
     - cd $DEPS_BUILD_DIR
-    - wget $LZ4_URL -O lz4-r127.tar.gz
-    - tar xzf lz4-r127.tar.gz && cd lz4-r127
+    - wget $LZ4_URL -O lz4-$LZ4_VER.tar.gz
+    - tar xzf lz4-$LZ4_VER.tar.gz && cd lz4-$LZ4_VER
     - sudo make PREFIX=$DEPS_PREFIX install
     # install LuaJIT
     - cd $DEPS_BUILD_DIR
@@ -29,8 +31,8 @@ install:
     - sudo make PREFIX=$DEPS_PREFIX XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
     # install luarocks
     - cd $DEPS_BUILD_DIR
-    - wget $LUAROCKS_URL -O luarocks-2.2.0.tar.gz
-    - tar xzf luarocks-2.2.0.tar.gz && cd luarocks-2.2.0
+    - wget $LUAROCKS_URL -O luarocks-$LUAROCKS_VER.tar.gz
+    - tar xzf luarocks-$LUAROCKS_VER.tar.gz && cd luarocks-$LUAROCKS_VER
     - ./configure
       --lua-version=5.1 --lua-suffix=$LJ_BIN_SUFFIX --with-lua-include="/usr/local/include/$LJ"
     - sudo make build install
