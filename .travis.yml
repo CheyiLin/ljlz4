@@ -6,7 +6,7 @@ env:
     global:
         - DEPS_BUILD_DIR=$TRAVIS_BUILD_DIR/deps
         - DEPS_PREFIX=/usr/local
-        - LZ4_VER=r128
+        - LZ4_VER=r129
         - LUAROCKS_VER=2.2.1
         - LZ4_URL="https://github.com/Cyan4973/lz4/archive/$LZ4_VER.tar.gz"
         - LUAROCKS_URL="http://keplerproject.github.io/luarocks/releases/luarocks-$LUAROCKS_VER.tar.gz"
