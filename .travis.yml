@@ -12,7 +12,7 @@ env:
         - LUAROCKS_URL="http://keplerproject.github.io/luarocks/releases/luarocks-$LUAROCKS_VER.tar.gz"
         - LJ_REPO="http://luajit.org/git/luajit-2.0.git"
     matrix:
-        - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit-2.0.3       LJ_BIN="lua$LJ_BIN_SUFFIX"
+        - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit-2.0.4       LJ_BIN="lua$LJ_BIN_SUFFIX"
         - LJ=luajit-2.1 LJ_BR=v2.1   LJ_BIN_SUFFIX=jit-2.1.0-alpha LJ_BIN="lua$LJ_BIN_SUFFIX"
 
 before_install:
