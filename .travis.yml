@@ -6,18 +6,18 @@ env:
     global:
         - DEPS_BUILD_DIR=$TRAVIS_BUILD_DIR/deps
         - DEPS_PREFIX=/usr/local
-        - LZ4_VER=r130
-        - LUAROCKS_VER=2.2.1
+        - LZ4_VER=r131
+        - LUAROCKS_VER=2.2.2
         - LZ4_URL="https://github.com/Cyan4973/lz4/archive/$LZ4_VER.tar.gz"
         - LUAROCKS_URL="http://keplerproject.github.io/luarocks/releases/luarocks-$LUAROCKS_VER.tar.gz"
         - LJ_REPO="http://luajit.org/git/luajit-2.0.git"
     matrix:
-        - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit-2.0.4       LJ_BIN="lua$LJ_BIN_SUFFIX"
+        - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit             LJ_BIN="lua$LJ_BIN_SUFFIX"
         - LJ=luajit-2.1 LJ_BR=v2.1   LJ_BIN_SUFFIX=jit-2.1.0-alpha LJ_BIN="lua$LJ_BIN_SUFFIX"
 
 before_install:
     - mkdir -p $DEPS_BUILD_DIR
-    - sudo apt-get update -q
+    - sudo apt-get update -qq
 
 install:
     # install LZ4
