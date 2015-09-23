@@ -24,6 +24,9 @@ before_install:
     #- sudo apt-get update -qq
 
 install:
+    # update the paths first
+    - export PATH=$DEPS_BIN_DIR:$PATH
+    - export LD_LIBRARY_PATH=$DEPS_LIB_DIR:$LD_LIBRARY_PATH
     # install LZ4
     - cd $DEPS_BUILD_DIR
     - wget $LZ4_URL -O lz4-$LZ4_VER.tar.gz
@@ -39,19 +42,16 @@ install:
     - tar xzf luarocks-$LUAROCKS_VER.tar.gz && cd luarocks-$LUAROCKS_VER
     - ./configure --prefix=$DEPS_PREFIX
       --lua-version=5.1 --lua-suffix=$LJ_BIN_SUFFIX --with-lua-include=$DEPS_PREFIX/include/$LJ && make build install
+    # install busted
+    - luarocks install busted
 
 before_script:
     # back to home directory
     - cd $TRAVIS_BUILD_DIR
-    # update the path
-    - export PATH=$DEPS_BIN_DIR:$PATH
-    - export LD_LIBRARY_PATH=$DEPS_LIB_DIR:$LD_LIBRARY_PATH
-    # install busted
-    - luarocks install busted
     # update shared libraries
     #- sudo ldconfig -v 2> /dev/null | grep lz4
     # check executables
-    - which $LJ_BIN
+    - which $LJ_BIN 2>/dev/null && $LJ_BIN -v
     - head -1 `which luarocks`
 
 script:
