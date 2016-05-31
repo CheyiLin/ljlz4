@@ -16,8 +16,8 @@ env:
         - LUAROCKS_URL="http://keplerproject.github.io/luarocks/releases/luarocks-$LUAROCKS_VER.tar.gz"
         - LJ_REPO="https://github.com/LuaJIT/LuaJIT.git"
     matrix:
-        - LJ=luajit-2.0 LJ_BR=master LJ_BIN_SUFFIX=jit             LJ_BIN="lua$LJ_BIN_SUFFIX"
-        - LJ=luajit-2.1 LJ_BR=v2.1   LJ_BIN_SUFFIX=jit-2.1.0-beta1 LJ_BIN="lua$LJ_BIN_SUFFIX"
+        - LJ=luajit-2.0 LJ_BR=master
+        - LJ=luajit-2.1 LJ_BR=v2.1
 
 before_install:
     - mkdir -p $DEPS_BUILD_DIR
@@ -35,6 +35,7 @@ install:
     # install LuaJIT
     - cd $DEPS_BUILD_DIR
     - git clone -b $LJ_BR $LJ_REPO luajit2.git && cd luajit2.git
+    - LJ_TAG=`git describe --abbre=0` && LJ_BIN_SUFFIX=jit-${LJ_TAG:1} && LJ_BIN=lua$LJ_BIN_SUFFIX
     - make PREFIX=$DEPS_PREFIX XCFLAGS+="-DLUAJIT_ENABLE_LUA52COMPAT" install
     # install luarocks
     - cd $DEPS_BUILD_DIR
