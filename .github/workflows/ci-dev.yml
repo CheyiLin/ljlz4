@@ -47,6 +47,8 @@ jobs:
           pushd ${{ matrix.lz4-dir }}
           make && sudo make install
           popd
+          sudo ldconfig -v
+          ldconfig -p | grep lz4
       - name: Build luajit
         shell: bash
         run: |
@@ -74,7 +76,7 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          set -euo pipefail
-          ldconfig -v
+          set -euxo pipefail
           luajit -v
+          luajit lz4.lua
           busted -v
