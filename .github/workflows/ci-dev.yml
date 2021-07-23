@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           curl -SfL https://github.com/lz4/lz4/archive/refs/tags/${{ matrix.lz4 }}.tar.gz | tar xz
           pushd ${{ matrix.lz4-dir }}
-          make install
+          make && sudo make install
           popd
       - name: Build luajit
         shell: bash
@@ -53,7 +53,7 @@ jobs:
           set -euo pipefail
           curl -SfL ${{ matrix.lua-url }} | tar xz
           pushd ${{ matrix.lua-dir }}
-          make install
+          make && sudo make install
           popd
           luajit -v
       - name: Build luarocks
@@ -63,14 +63,14 @@ jobs:
           curl -SfL https://github.com/luarocks/luarocks/archive/refs/tags/v3.7.0.tar.gz | tar xz
           pushd luarocks-3.7.0
           ./configure
-          make install
+          make && sudo make install
           popd
           luarocks config
       - name: Install luarocks modules
         shell: bash
         run: |
           set -euo pipefail
-          luarocks install busted
+          sudo luarocks install busted
       - name: Test
         shell: bash
         run: |
