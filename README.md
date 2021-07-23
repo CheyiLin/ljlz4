@@ -1,8 +1,17 @@
 # ljlz4
 
-[![travis-ci status](https://travis-ci.org/CheyiLin/ljlz4.svg?branch=master)](https://travis-ci.org/CheyiLin/ljlz4)
+[![ci-dev](https://github.com/CheyiLin/ljlz4/actions/workflows/ci-dev.yml/badge.svg)](https://github.com/CheyiLin/ljlz4/actions/workflows/ci-dev.yml)
 
 LZ4 library for LuaJIT (FFI Binding)
+
+## Compatibility
+
+| Version | [LuaJIT 2.0](https://luajit.org/luajit.html) | [LuaJIT 2.1 (OpenResty)](https://github.com/openresty/luajit2) |
+| ---------- | ------- | ------- |
+| lz4 v1.9.3 | &check; | &check; |
+| lz4 v1.8.3 | &check; | &check; |
+| lz4 v1.7.5 | &check; | &check; |
+| lz4 r131 | &check; | &check; |
 
 ## Usage
 
