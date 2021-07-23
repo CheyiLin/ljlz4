@@ -1,0 +1,79 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+name: ci-dev
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - "*"
+    paths-ignore:
+      - README.md
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lz4: [v1.9.3, v1.8.3, v1.7.5, r131]
+        lua: [luajit-2.0, luajit-2.1]
+        include:
+          - lz4: v1.9.3
+            lz4-dir: lz4-1.9.3
+          - lz4: v1.8.3
+            lz4-dir: lz4-1.8.3
+          - lz4: v1.7.5
+            lz4-dir: lz4-1.7.5
+          - lz4: r131
+            lz4-dir: lz4-r131
+          - lua: luajit-2.0
+            lua-url: https://github.com/LuaJIT/LuaJIT/archive/refs/tags/v2.0.5.tar.gz
+            lua-dir: LuaJIT-2.0.5
+          - lua: luajit-2.1
+            lua-url: https://github.com/openresty/luajit2/archive/refs/tags/v2.1-20210510.tar.gz
+            lua-dir: luajit2-2.1-20210510
+    env: {}
+    steps:
+      - name: Extract tag
+        id: tag
+        run: echo ::set-output name=TAG_NAME::${GITHUB_REF#refs/tags/}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build lz4
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -SfL https://github.com/lz4/lz4/archive/refs/tags/${{ matrix.lz4 }}.tar.gz | tar xz
+          pushd ${{ matrix.lz4-dir }}
+          make install
+          popd
+      - name: Build luajit
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -SfL ${{ matrix.lua-url }} | tar xz
+          pushd ${{ matrix.lua-dir }}
+          make install
+          popd
+          luajit -v
+      - name: Build luarocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -SfL https://github.com/luarocks/luarocks/archive/refs/tags/v3.7.0.tar.gz | tar xz
+          pushd luarocks-3.7.0
+          ./configure
+          make install
+          popd
+          luarocks config
+      - name: Install luarocks modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          luarocks install busted
+      - name: Test
+        shell: bash
+        run: |
+          set -euo pipefail
+          luajit -v
+          busted -v
