@@ -73,9 +73,14 @@ jobs:
         run: |
           set -euo pipefail
           sudo luarocks install busted
+          sudo luarocks install luacov
+          sudo luarocks install luacov-console
       - name: Test
         shell: bash
         run: |
           set -euo pipefail
           luajit -v
-          busted -v
+          busted --list
+          busted --coverage --verbose
+          luacov-console .
+          luacov-console -s
