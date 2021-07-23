@@ -75,5 +75,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          ldconfig -v
           luajit -v
           busted -v
