@@ -1,5 +1,4 @@
-ljlz4
-=====
+# ljlz4
 
 [![travis-ci status](https://travis-ci.org/CheyiLin/ljlz4.svg?branch=master)](https://travis-ci.org/CheyiLin/ljlz4)
 
@@ -30,8 +29,7 @@ local compressed_data, errmsg = lz4.compress(data, compression_level)
 local decompressed_data, errmsg = lz4.decompress(compressed_data)
 ```
 
-License
--------
+## License
 
-Copyright (c) 2014 Cheyi Lin.
+Copyright (c) 2014-2021 Cheyi Lin.
 MIT licensed. See LICENSE for details.

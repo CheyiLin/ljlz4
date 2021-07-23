@@ -1,20 +1,20 @@
 --[[
 	ljlz4 - LZ4 library for LuaJIT - https://github.com/CheyiLin/ljlz4
-	
+
 	The MIT License (MIT)
-	
-	Copyright (c) 2014 Cheyi Lin <cheyi.lin@gmail.com>
-	
+
+	Copyright (c) 2014-2021 Cheyi Lin <cheyi.lin@gmail.com>
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 	copies of the Software, and to permit persons to whom the Software is
 	furnished to do so, subject to the following conditions:
-	
+
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
-	
+
 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,7 +46,7 @@ ffi.cdef [[
 	int LZ4_compress (const char *, char *, int);
 	int LZ4_compressHC (const char *, char *, int);
 	int LZ4_decompress_safe (const char *, char *, int, int);
-	
+
 	typedef struct {
 		uint32_t sig;
 		uint32_t len;
@@ -84,12 +84,12 @@ local function lz4_hdr_write(buf, len)
 	if ffi_sizeof(buf) < hdr_len then
 		return nil, "invalid buffer length"
 	end
-	
+
 	local hdr = hdr_ct()
 	hdr.sig = htonl(lz4_signature)
 	hdr.len = htonl(len)
 	ffi_copy(buf, hdr, hdr_len)
-	
+
 	return true
 end
 
@@ -97,28 +97,28 @@ local function lz4_hdr_read(src)
 	if #src < hdr_len then
 		return nil, "invalid source length"
 	end
-	
+
 	local hdr = hdr_ct()
 	ffi_copy(hdr, src, hdr_len)
 	hdr.sig = ntohl(hdr.sig)
 	hdr.len = ntohl(hdr.len)
-	
+
 	if hdr.sig ~= lz4_signature then
 		return nil, "lz4 signature mismatch"
 	end
-	
+
 	return hdr
 end
 
 local function lz4_compress_core(src, clz4_compressor)
 	local dest_len = clz4.LZ4_compressBound(#src)
 	local dest_buf = buf_ct(hdr_len + dest_len)
-	
+
 	local ok, errmsg = lz4_hdr_write(dest_buf, #src)
 	if not ok then
 		return nil, errmsg
 	end
-	
+
 	local compress_len = clz4_compressor(src, dest_buf + hdr_len, #src)
 	if compress_len > 0 then
 		return ffi_string(dest_buf, compress_len + hdr_len)
@@ -141,7 +141,7 @@ local function lz4_compress(src, level)
 	if not src or #src == 0 then
 		return nil, "invalid source (is nil or is a empty string)"
 	end
-	
+
 	-- ref: https://github.com/Cyan4973/lz4/blob/master/programs/lz4io.c#L308
 	if not level or level < 3 then
 		return lz4_compress_core(src, clz4.LZ4_compress)
@@ -153,26 +153,26 @@ end
 local function lz4_decompress(src)
 	if not src or #src == 0 then
 		return nil, "invalid source (is nil or is a empty string)"
-	end 
-	
+	end
+
 	local hdr, errmsg = lz4_hdr_read(src)
 	if not hdr then
 		return nil, errmsg
 	end
-	
+
 	return lz4_decompress_core(src:sub(hdr_len + 1), hdr.len)
 end
 
 ----
 --
 -- @module lz4
--- 
+--
 -- @usage local lz4 = require("lz4")
 --        local data = "hello lz4"
 --        local errmsg, compressed_data, decompressed_data
 --        compressed_data, errmsg = lz4.compress(data)
 --        decompressed_data, errmsg = lz4.decompress(compressed_data)
---        assert(decompressed_data == data) 
+--        assert(decompressed_data == data)
 --
 local lz4 = {
 	version = function () return lz4_version end,
@@ -182,7 +182,7 @@ local lz4 = {
 
 ----
 -- @function [parent=#lz4] version
--- @return #number lz4 library version 
+-- @return #number lz4 library version
 
 ----
 -- @function [parent=#lz4] compress
